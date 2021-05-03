@@ -1,3 +1,4 @@
+using ApplicationCore.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Interfaces;
+using Web.Services;
 
 namespace Web
 {
@@ -37,6 +40,9 @@ namespace Web
                     Configuration.GetConnectionString("IdentityDbConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));//generic olduðu için injection
+            services.AddScoped<IHomeViewModelService, HomeViewModelService>();//generic olmadýðý için injection yukarýdaki buna lazým
+
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppIdentityDbContext>();
@@ -59,6 +65,14 @@ namespace Web
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+        //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-5.0#localization-middleware-2
+        //tarayýcýnýn diline göre deðiþiyor. 
+            var supportedCultures = new[] { "en-US"/*, "tr-TR" */};
+            var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+            app.UseRequestLocalization(localizationOptions);
 
             app.UseRouting();
 
