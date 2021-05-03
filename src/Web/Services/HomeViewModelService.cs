@@ -23,19 +23,20 @@ namespace Web.Services
             _categoryRepository = categoryRepository;
             _authorRepository = authorRepository;
         }
-        public async Task<HomeIndexViewModel> GetHomeIndexViewModel()
+        public async Task<HomeIndexViewModel> GetHomeIndexViewModel(int? categoryId, int? authorId)
         {
-            //alttaki satır app core da ki spec ve ef deki list async ile çalışıyor. Include işlemi yaptık.
-            var products = await _productRepository.ListAsync(new ProductsWithAuthorSpecification());
+            //alttaki satır app core da ki spec ve ef deki list async ile çalışıyor. Include işlemi yaptık. Daha sonra filtre yaptık.
+            var products = await _productRepository.
+                ListAsync(new ProductsWithAuthorSpecification(categoryId, authorId));
             var vm = new HomeIndexViewModel()
             {
-                Products = products.Select(x=>new ProductViewModel() 
+                Products = products.Select(x => new ProductViewModel()
                 {
                     Id = x.Id,
                     Name = x.Name,
                     PictureUri = x.PictureUri,
                     Price = x.Price,
-                    AuthorName = x.Author.FullName
+                    AuthorName = x.Author?.FullName //yazar yoksa yazma
                 }).ToList(),
                 Authors = await GetAuthors(),
                 Categories = await GetCategories()
@@ -45,10 +46,10 @@ namespace Web.Services
         public async Task<List<SelectListItem>> GetAuthors()
         {
             var authors = await _authorRepository.ListAllAsync();
-            var items = authors.Select(x => new SelectListItem() 
-            { 
-                Text = x.FullName, 
-                Value = x.Id.ToString() 
+            var items = authors.Select(x => new SelectListItem()
+            {
+                Text = x.FullName,
+                Value = x.Id.ToString()
             }).OrderBy(x => x.Text).ToList();
             items.Insert(0, new SelectListItem() { Text = "All", Value = null });
             return items;

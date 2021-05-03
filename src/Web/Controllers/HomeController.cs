@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Web.Interfaces;
 using Web.Models;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -24,9 +25,9 @@ namespace Web.Controllers
             //_productRepository = productRepository;//application core'a bağlıyız dolayısıyla interface üzerinden çalışıyoruz.
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(HomeIndexViewModel vm)
         {
-            return View(await _homeViewModelService.GetHomeIndexViewModel());
+            return View(await _homeViewModelService.GetHomeIndexViewModel(vm.CategoryId, vm.AuthorId));
         }
 
         public IActionResult Privacy()
