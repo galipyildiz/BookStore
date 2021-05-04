@@ -25,9 +25,9 @@ namespace Web.Controllers
             //_productRepository = productRepository;//application core'a bağlıyız dolayısıyla interface üzerinden çalışıyoruz.
         }
 
-        public async Task<IActionResult> Index(HomeIndexViewModel vm)
+        public async Task<IActionResult> Index(HomeIndexViewModel vm, int page = 1)
         {
-            return View(await _homeViewModelService.GetHomeIndexViewModel(vm.CategoryId, vm.AuthorId));
+            return View(await _homeViewModelService.GetHomeIndexViewModel(vm.CategoryId, vm.AuthorId, page, Constans.ITEMS_PER_PAGE));
         }
 
         public IActionResult Privacy()

@@ -25,5 +25,9 @@ namespace ApplicationCore.Specifications
                 Query.Where(x => x.AuthorId == authorId);
             }
         }
+        public ProductsWithAuthorSpecification(int? categoryId, int? authorId, int skip, int take) : this(categoryId, authorId)//yukarıdakini çalıştırdı
+        {
+            Query.Skip(skip).Take(take);
+        }
     }
 }

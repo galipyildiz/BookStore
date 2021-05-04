@@ -13,5 +13,6 @@ namespace Web.ViewModels
         public List<SelectListItem> Authors { get; set; }
         public int? CategoryId { get; set; }//bu ikisi selectler için geçerli
         public int? AuthorId { get; set; }
+        public PaginationInfoViewModel PaginationInfo { get; set; }
     }
 }

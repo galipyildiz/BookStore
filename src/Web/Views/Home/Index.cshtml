@@ -28,7 +28,10 @@
         </div>
     }
 </div>
-@section scripts{ 
+
+<partial name="_PaginationPartial" model="Model.PaginationInfo">
+
+@section scripts{
     <script>
         $("#CategoryId, #AuthorId").change(function () {
             $(this).closest("form").submit();

@@ -1,0 +1,26 @@
+﻿@model PaginationInfoViewModel
+@{
+    //önce mevcut route data alacağız daha sonra sayfa route değerini ona ekleyeceğiz
+    @*foreach (var item in Context.Request.Query) ne geldiğini görmeek için denenebilir
+        {
+            <p>@item.Key - @item.Value</p>
+        }*@
+    var prevRouteData = Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+    prevRouteData.Remove("page");
+    prevRouteData.Add("page", (Model.Page - 1).ToString());
+
+    var nextRouteData = Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+    nextRouteData.Remove("page");
+    nextRouteData.Add("page", (Model.Page + 1).ToString());
+}
+<div class="d-flex justify-content-between">
+    @*<a asp-action="Index" asp-route-page="@(Model.Page - 1)" class="btn btn-primary @(Model.HasPrev ? "" : "disabled")">&laquo; Previous</a> Yukarıdaki c# bölgesini yaptığımız için değiştiriyoruz*@
+
+    <a asp-action="Index" asp-all-route-data="@prevRouteData" class="btn btn-primary @(Model.HasPrev ? "" : "disabled")">&laquo; <span class="d-none d-sm-inline">Previous</span></a>
+
+    <span>Showing @Model.ItemsOnPage of @Model.TotalItems Items (Page @Model.Page / @Model.TotalPages)</span>
+
+    @*<a asp-action="Index" asp-route-page="@(Model.Page + 1)" class="btn btn-primary @(Model.HasNext ? "" : "disabled")">Next &raquo;</a>*@
+    <a asp-action="Index" asp-all-route-data="@(nextRouteData)" class="btn btn-primary @(Model.HasNext ? "" : "disabled")">  <span class="d-none d-sm-inline">Next</span> &raquo;</a>
+    @* d-none d-sm-inline extra small cihazlarda gizle demek *@
+</div>
