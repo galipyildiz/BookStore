@@ -12,7 +12,7 @@
 <div class="row mx-md-n2">
     @foreach (var item in Model.Products)
     {
-        <div class="col-md-3 px-md-2 mb-3">
+        <div class="col-md-3 px-md-2 mb-3 align-items-center d-flex flex-column border p-2">
             <div class="product-image-wrapper">
                 <img src="~/img/@item.PictureUri" class="product-image" />
             </div>
@@ -22,9 +22,10 @@
             <div class="author-name">
                 @item.AuthorName
             </div>
-            <div class="product-price">
+            <div class="product-price mb-2">
                 @item.Price.ToString("c2")
             </div>
+            <button class="btn btn-success mt-auto"><i class="fas fa-cart-plus"></i></button>
         </div>
     }
 </div>
