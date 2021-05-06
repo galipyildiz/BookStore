@@ -1,6 +1,10 @@
 ﻿@model HomeIndexViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@*https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-5.0#javascript*@
+
 @{
     ViewData["Title"] = "Home Page";
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
 }
 <form class="form-inline py-3">
     <label class="mr-1">Category:</label>
@@ -25,17 +29,37 @@
             <div class="product-price mb-2">
                 @item.Price.ToString("c2")
             </div>
-            <button class="btn btn-success mt-auto"><i class="fas fa-cart-plus"></i></button>
+            <button class="btn btn-success mt-auto" data-add-to-basket="@item.Id"><i class="fas fa-cart-plus"></i></button>
         </div>
     }
 </div>
 
 <partial name="_PaginationPartial" model="Model.PaginationInfo">
 
-@section scripts{
-    <script>
-        $("#CategoryId, #AuthorId").change(function () {
-            $(this).closest("form").submit();
-        });
-    </script>
-}
+    @section scripts{
+        <script>
+            $("#CategoryId, #AuthorId").change(function () {
+                $(this).closest("form").submit();
+            });
+
+            $("[data-add-to-basket]").click(function (event) {
+                event.preventDefault();
+                var productId = $(this).data("add-to-basket");
+
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("AddToBasket","Basket")",
+                    headers: {
+                        RequestVerificationToken: "@token" //tokens başlıkta gidiyor.
+                    },
+                    data: {
+                        productId: productId,
+                        quantity: 1
+                    },
+                    success: function (data) {
+                        $("#navBasketItemsCount").text(data.basketItemsCount);//json olduğu için ilk harf küçük geliyor.
+                    }
+                });
+            });
+        </script>
+    }

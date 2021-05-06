@@ -1,4 +1,5 @@
 using ApplicationCore.Interfaces;
+using ApplicationCore.Services;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -42,6 +43,8 @@ namespace Web
 
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));//generic olduðu için injection
             services.AddScoped<IHomeViewModelService, HomeViewModelService>();//generic olmadýðý için injection yukarýdaki buna lazým
+            services.AddScoped<IBasketViewModelService, BasketViewModelService>();//abstract, concrete
+            services.AddScoped<IBasketService, BasketService>();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
