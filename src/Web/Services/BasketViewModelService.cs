@@ -17,12 +17,14 @@ namespace Web.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAsyncRepository<Basket> _basketRepository;
         private readonly IBasketService _basketService;
+        private readonly IAsyncRepository<Product> _productRepository;
 
-        public BasketViewModelService(IHttpContextAccessor httpContextAccessor, IAsyncRepository<Basket> basketRepository, IBasketService basketService)
+        public BasketViewModelService(IHttpContextAccessor httpContextAccessor, IAsyncRepository<Basket> basketRepository, IBasketService basketService, IAsyncRepository<Product> productRepository)
         {
             _httpContextAccessor = httpContextAccessor;
             _basketRepository = basketRepository;
             _basketService = basketService;
+            _productRepository = productRepository;
         }
 
         public async Task<BasketItemsCountViewModel> GetBasketItemsCountViewModel(int basketId)
@@ -30,6 +32,37 @@ namespace Web.Services
             return new BasketItemsCountViewModel()
             {
                 BasketItemsCount = await _basketService.BasketItemCount(basketId)
+            };
+        }
+
+        public async Task<BasketViewModel> GetBasketViewModel()
+        {
+            int basketId = await GetOrCreateBasketIdAsync();
+            var spec = new BasketWithItemsSpecification(basketId);
+            var basket = await _basketRepository.FirstOrDefaultAsync(spec);
+            var productIds = basket.BasketItems.Select(x => x.ProductId).ToArray();
+            var specProducts = new ProductsSpecification(productIds);
+            var products = await _productRepository.ListAsync(specProducts);
+
+            var basketItems = new List<BasketItemViewModel>();
+            foreach (var item in basket.BasketItems)
+            {
+                var product = products.First(x => x.Id == item.ProductId);
+                basketItems.Add(new BasketItemViewModel()
+                {
+                    Id = item.Id,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    ProductName = product.Name,
+                    Price = product.Price,
+                    PictureUri = product.PictureUri
+                });
+            }
+            return new BasketViewModel()
+            {
+                Items = basketItems,
+                BasketId = basketId,
+                BuyerId = basket.BuyerId
             };
         }
 

@@ -58,6 +58,7 @@
                     },
                     success: function (data) {
                         $("#navBasketItemsCount").text(data.basketItemsCount);//json olduğu için ilk harf küçük geliyor.
+                        toastr.success("The item has been added to the basket.")
                     }
                 });
             });
