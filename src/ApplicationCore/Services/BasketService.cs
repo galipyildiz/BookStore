@@ -40,5 +40,12 @@ namespace ApplicationCore.Services
             var spec = new BasketItemSpecification(basketId);
             return await _basketItemRepository.CountAsync(spec);
         }
+
+        public async Task DeleteBasketItem(int basketId, int basketItemId)
+        {
+            var spec = new ManageBasketItemSpecification(basketId, basketItemId);
+            var item = await _basketItemRepository.FirstOrDefaultAsync(spec);
+            await _basketItemRepository.DeleteAsync(item);
+        }
     }
 }
