@@ -45,7 +45,7 @@ namespace Web.Services
             var products = await _productRepository.ListAsync(specProducts);
 
             var basketItems = new List<BasketItemViewModel>();
-            foreach (var item in basket.BasketItems)
+            foreach (var item in basket.BasketItems.OrderBy(x => x.Id))//ekleme sırasına göre sıraladık
             {
                 var product = products.First(x => x.Id == item.ProductId);
                 basketItems.Add(new BasketItemViewModel()

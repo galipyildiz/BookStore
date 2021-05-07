@@ -13,7 +13,7 @@
     <a href="#" class="btn btn-success">Checkout</a>
 </div>
 
-@section scripts{ 
+@section scripts{
     <script>
         $("body").on("click", "[data-remove-basket-item]", function (event) {
             event.preventDefault();
@@ -23,6 +23,21 @@
                 type: "post",
                 url: "@Url.Action("RemoveBasketItem","Basket")",
                 data: { basketItemId: basketItemId },
+                success: function (data) {
+                    $("#basket").html(data);
+                    var basketItemsCount = $("#basketItemsCount").val();
+                    $("#navBasketItemsCount").text(basketItemsCount);
+                }
+            })
+        });
+
+        $("body").on("change", "[data-update-basket-item]", function (event) {
+            var basketItemId = $(this).data("update-basket-item");
+            var quantity = Number($(this).val());
+            $.ajax({
+                type: "post",
+                url: "@Url.Action("UpdateBasketItem","Basket")",
+                data: { basketItemId, quantity },  //ikisinin ismi aynısıysa datayı yukardaki gibi yazmaya gerek yok
                 success: function (data) {
                     $("#basket").html(data);
                     var basketItemsCount = $("#basketItemsCount").val();

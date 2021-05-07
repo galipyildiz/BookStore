@@ -33,7 +33,7 @@
             @item.Price.ToString("c2")
         </div>
         <div class="col-2">
-            <input type="number" value="@item.Quantity" class="form-control" />
+            <input type="number" min="1" value="@item.Quantity" class="form-control" data-update-basket-item="@item.Id" />
         </div>
         <div class="col-2">
             <button class="btn btn-sm btn-danger float-right" data-remove-basket-item="@item.Id">
