@@ -27,12 +27,26 @@ namespace Web.Services
             _productRepository = productRepository;
         }
 
-        public async Task<BasketItemsCountViewModel> GetBasketItemsCountViewModel(int basketId)
+        public async Task<BasketItemsCountViewModel> GetBasketItemsCountViewModel(int? basketId = null)
         {
-            return new BasketItemsCountViewModel()
+            var vm = new BasketItemsCountViewModel();
+            if (!basketId.HasValue)
             {
-                BasketItemsCount = await _basketService.BasketItemCount(basketId)
-            };
+                string buyerId = GetBuyerId();
+                if (buyerId == null)
+                {
+                    return vm;
+                }
+                var spec = new BasketSpecification(buyerId);
+                var basket = await _basketRepository.FirstOrDefaultAsync(spec);
+                if (basket == null)
+                {
+                    return vm;
+                }
+                basketId = basket.Id;
+            }
+            vm.BasketItemsCount = await _basketService.BasketItemCount(basketId.Value);
+            return vm;
         }
 
         public async Task<BasketViewModel> GetBasketViewModel()
@@ -64,6 +78,14 @@ namespace Web.Services
                 BasketId = basketId,
                 BuyerId = basket.BuyerId
             };
+        }
+
+        public string GetBuyerId()
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var user = context.User;
+            var anonId = context.Request.Cookies[Constans.BASKET_COOKIE_NAME];
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) ?? anonId;//varsa 1. yoksa 2.
         }
 
         public async Task<int> GetOrCreateBasketIdAsync()
@@ -108,6 +130,18 @@ namespace Web.Services
                     return newBuyerId;
                 }
             }
+        }
+
+        public async Task TransferBasketsAsync(string userId)
+        {
+            // sepet transfer etme
+            var context = _httpContextAccessor.HttpContext;
+            var anonId = context.Request.Cookies[Constans.BASKET_COOKIE_NAME];
+            if (!string.IsNullOrEmpty(anonId))
+            {
+                await _basketService.TransferBasketAsync(anonId, userId);
+            }
+            context.Response.Cookies.Delete(Constans.BASKET_COOKIE_NAME);
         }
     }
 }
