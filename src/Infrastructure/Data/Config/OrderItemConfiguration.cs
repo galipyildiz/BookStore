@@ -14,7 +14,7 @@ namespace Infrastructure.Data.Config
     {
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
-            builder.Property(x => x.ProductName).IsRequired().HasMaxLength(50);
+            builder.Property(x => x.ProductName).IsRequired().HasMaxLength(100);
 
             builder.Property(x => x.Price).IsRequired().HasColumnType("decimal(18,2)");
         }
