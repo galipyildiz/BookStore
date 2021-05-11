@@ -1,4 +1,6 @@
-﻿using ApplicationCore.Interfaces;
+﻿using ApplicationCore.Entities;
+using ApplicationCore.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,11 +15,13 @@ namespace Web.Controllers
     {
         private readonly IBasketViewModelService _basketViewModelService;
         private readonly IBasketService _basketService;
+        private readonly IOrderService _orderService;
 
-        public BasketController(IBasketViewModelService basketViewModelService, IBasketService basketService)
+        public BasketController(IBasketViewModelService basketViewModelService, IBasketService basketService, IOrderService orderService)
         {
             _basketViewModelService = basketViewModelService;
             _basketService = basketService;
+            _orderService = orderService;
         }
         public async Task<IActionResult> Index()
         {
@@ -38,7 +42,7 @@ namespace Web.Controllers
         {
             var basketId = await _basketViewModelService.GetOrCreateBasketIdAsync();
             await _basketService.DeleteBasketItem(basketId, basketItemId);
-            return PartialView("_BasketPartial",await _basketViewModelService.GetBasketViewModel());
+            return PartialView("_BasketPartial", await _basketViewModelService.GetBasketViewModel());
         }
         [HttpPost]
         public async Task<IActionResult> UpdateBasketItem(int basketItemId, int quantity)
@@ -47,6 +51,41 @@ namespace Web.Controllers
             var basketId = await _basketViewModelService.GetOrCreateBasketIdAsync();
             await _basketService.UpdateBasketItem(basketId, basketItemId, quantity);
             return PartialView("_BasketPartial", await _basketViewModelService.GetBasketViewModel());
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Checkout()
+        {
+            var vm = new CheckoutViewModel()
+            {
+                BasketItems = await _basketViewModelService.GetBasketItems()
+            };
+            return View(vm);
+        }
+        [Authorize,HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int basketId = await _basketViewModelService.GetOrCreateBasketIdAsync();
+                // Process the payment
+                // Place the order
+                var address = new Address()
+                {
+                    City = model.City,
+                    Country = model.Country,
+                    State = model.State,
+                    ZipCode = model.ZipCode,
+                    Street = model.Street
+                };
+                await _orderService.CreateOrderAsync(basketId, address);
+                //delete the basket
+                await _basketService.DeleteBasketAsync(basketId);
+
+                return RedirectToAction("Success");
+            }
+            model.BasketItems = await _basketViewModelService.GetBasketItems();
+            return View(model);
         }
     }
 }

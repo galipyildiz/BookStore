@@ -14,5 +14,6 @@ namespace ApplicationCore.Specifications
         {
             Query.Where(x => x.BuyerId == buyerId);
         }
+        
     }
 }

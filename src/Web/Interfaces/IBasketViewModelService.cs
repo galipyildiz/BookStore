@@ -11,9 +11,9 @@ namespace Web.Interfaces
     {
         string GetBuyerId();
         string GetOrCreateBuyerId();
-       
         Task<int> GetOrCreateBasketIdAsync();
         Task<BasketItemsCountViewModel> GetBasketItemsCountViewModel(int? basketId = null);
+        Task<List<BasketItemViewModel>> GetBasketItems();
         Task<BasketViewModel> GetBasketViewModel();
         Task TransferBasketsAsync(string userId);
     }

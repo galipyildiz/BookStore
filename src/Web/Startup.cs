@@ -45,6 +45,7 @@ namespace Web
             services.AddScoped<IHomeViewModelService, HomeViewModelService>();//generic olmadýðý için injection yukarýdaki buna lazým
             services.AddScoped<IBasketViewModelService, BasketViewModelService>();//abstract, concrete
             services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
