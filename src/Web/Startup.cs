@@ -46,6 +46,7 @@ namespace Web
             services.AddScoped<IBasketViewModelService, BasketViewModelService>();//abstract, concrete
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderViewModelService, OrderViewModelService>();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()

@@ -16,12 +16,14 @@ namespace Web.Controllers
         private readonly IBasketViewModelService _basketViewModelService;
         private readonly IBasketService _basketService;
         private readonly IOrderService _orderService;
+        private readonly IOrderViewModelService _orderViewModelService;
 
-        public BasketController(IBasketViewModelService basketViewModelService, IBasketService basketService, IOrderService orderService)
+        public BasketController(IBasketViewModelService basketViewModelService, IBasketService basketService, IOrderService orderService, IOrderViewModelService orderViewModelService)
         {
             _basketViewModelService = basketViewModelService;
             _basketService = basketService;
             _orderService = orderService;
+            _orderViewModelService = orderViewModelService;
         }
         public async Task<IActionResult> Index()
         {
@@ -92,5 +94,20 @@ namespace Web.Controllers
         {
             return View();
         }
+        [Authorize]
+        public async Task<IActionResult> Orders()
+        {
+            return View(await _orderViewModelService.ListOrdersAsync());
+        }
+        [Authorize]
+        public async Task<IActionResult> OrderDetails(int? id)
+        {
+            if (id == null || id < 0)
+            {
+                return NotFound();
+            }
+            return View(await _orderViewModelService.ListOrderItemsAsync((int)id));
+        }
+
     }
 }

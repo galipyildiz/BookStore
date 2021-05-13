@@ -1,0 +1,22 @@
+﻿@model List<OrderItemViewModel>
+@{
+    ViewData["Title"] = "Order Details";
+}
+<h2>Order Details</h2>
+<div class="row col-12">
+    @foreach (var item in Model)
+    {
+        <div class="card m-2" style="width: 18rem;">
+            <img class="card-img-top" src="~/img/@item.PictureUri" alt="@item.ProductName">
+            <div class="card-body">
+                <h5 class="card-title">@item.ProductName</h5>
+                <p class="card-text">
+                    Quantity: @item.Quantity
+                    <br />
+                    Price: @(item.TotalPrice().ToString("c2"))
+                </p>
+            </div>
+        </div>
+    }
+</div>
+<h1>Total Price: @Model.Select(x=>x.TotalPrice()).Sum().ToString("c2")</h1>
