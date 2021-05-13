@@ -10,6 +10,10 @@ namespace ApplicationCore.Specifications
 {
     public class OrderSpecification : Specification<Order>
     {
+        public OrderSpecification()
+        {
+            Query.Include(x => x.OrderItems).Include(x => x.ShiptoAddress);
+        }
         public OrderSpecification(string buyerId)
         {
             Query.Include(x=>x.OrderItems).Include(x=>x.ShiptoAddress).Where(x => x.BuyerId == buyerId);

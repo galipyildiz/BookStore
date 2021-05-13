@@ -8,6 +8,7 @@ namespace Web.ViewModels
 {
     public class OrderViewModel
     {
+        public string UserName { get; set; }
         public int OrderId { get; set; }
         public DateTimeOffset OrderDate { get; set; }
         public Address Address { get; set; }
