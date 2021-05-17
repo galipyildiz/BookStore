@@ -23,9 +23,9 @@ namespace Web
             using (var scope = host.Services.CreateScope())//startupda kullanabileceðim bir servis scoppe olusturuyor
             {
                 var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                appDbContext.Database.Migrate();
+                await appDbContext.Database.MigrateAsync();
                 var appIdentityDbContext = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
-                appIdentityDbContext.Database.Migrate();
+                await appIdentityDbContext.Database.MigrateAsync();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 await AppDbContextSeed.SeedAsync(appDbContext);
